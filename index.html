@@ -37,7 +37,9 @@
                 prayers: {
                     fajr: "Fajr", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha"
                 },
-                labels: ["1 Hour", "2 Hours", "3 Hours", "4 Hours"]
+                labels: ["1 Hour", "2 Hours", "3 Hours", "4 Hours"],
+                achieveTitle: "RM 22.35 SECURED! 💰",
+                achieveMsg: "You've survived 1 Hour of OT! Keep grinding for the next level, or run home to your loving family? The choice is yours. ❤️"
             },
             cn: {
                 title: "下班时间计算器",
@@ -58,7 +60,9 @@
                 prayers: {
                     fajr: "晨礼", dhuhr: "晌礼", asr: "晡礼", maghrib: "昏礼", isha: "宵礼"
                 },
-                labels: ["1 小时", "2 小时", "3 小时", "4 小时"]
+                labels: ["1 小时", "2 小时", "3 小时", "4 小时"],
+                achieveTitle: "RM 22.35 到手！💰",
+                achieveMsg: "加班 1 小时达成！继续奋斗赚下一桶金，还是回家陪亲爱的家人？由你决定。❤️"
             },
             jp: {
                 title: "退勤時間計算機",
@@ -79,7 +83,9 @@
                 prayers: {
                     fajr: "ファジュル", dhuhr: "ズフル", asr: "アスル", maghrib: "マグリブ", isha: "イシャ"
                 },
-                labels: ["1時間", "2時間", "3時間", "4時間"]
+                labels: ["1時間", "2時間", "3時間", "4時間"],
+                achieveTitle: "RM 22.35 ゲット！💰",
+                achieveMsg: "残業1時間達成！次のレベルを目指して頑張るか、愛する家族の元へ帰るか？決めるのはあなたです。❤️"
             }
         };
 
@@ -96,10 +102,13 @@
             const [weatherData, setWeatherData] = useState(null);
             const [prayerTimes, setPrayerTimes] = useState([]);
             const [nextPrayer, setNextPrayer] = useState(null);
+            
+            // Achievement State
+            const [showAchievement, setShowAchievement] = useState(false);
 
             const t = translations[lang];
 
-            // --- SWAT RATE CONSTANT (UPDATED) ---
+            // --- SWAT RATE CONSTANT ---
             const SWAT_RATE_PER_HOUR = 22.35;
 
             // --- SETUP & INIT ---
@@ -214,6 +223,15 @@
                 return `${newH}:${newM}`;
             };
 
+            // Convert "HH:MM" string to a Date object for comparison (using today's date)
+            const getTimeObject = (timeStr) => {
+                if (!timeStr) return null;
+                const [h, m] = timeStr.split(':').map(Number);
+                const d = new Date();
+                d.setHours(h, m, 0, 0);
+                return d;
+            };
+
             useEffect(() => {
                 if (timeIn) {
                     if (timeIn < "07:30" || timeIn > "09:30") setIsOutOfRange(true);
@@ -227,7 +245,17 @@
                     const ot3 = addTime(ot2, 1, 0);
                     const ot4 = addTime(ot3, 1, 0);
 
-                    // Calculate Rates (Exact updated calculation)
+                    // Check Achievement (Compare NOW vs OT 1 Time)
+                    const now = new Date();
+                    const ot1Date = getTimeObject(ot1);
+                    
+                    // Simple logic: If current time is AFTER OT1 time
+                    if (ot1Date && now >= ot1Date) {
+                        setShowAchievement(true);
+                    } else {
+                        setShowAchievement(false);
+                    }
+
                     const rate1 = (SWAT_RATE_PER_HOUR * 1).toFixed(2);
                     const rate2 = (SWAT_RATE_PER_HOUR * 2).toFixed(2);
                     const rate3 = (SWAT_RATE_PER_HOUR * 3).toFixed(2);
@@ -240,13 +268,13 @@
                         { label: t.labels[3], time: ot4, rate: rate4 },
                     ]);
                 }
-            }, [timeIn, lang]);
+            }, [timeIn, lang, currentDate]); // Added currentDate dependency so it checks every second
 
             const weatherInfo = getWeatherMessage(weatherData?.weathercode);
 
             return (
                 <div className="container">
-                    {/* CONTROLS: Language & Theme */}
+                    {/* CONTROLS */}
                     <div className="top-controls">
                         <div className="lang-switcher">
                             <button className={`lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLanguage('en')}>EN</button>
@@ -261,6 +289,14 @@
                     <h1>{t.title}</h1>
                     
                     <div className="live-date">{formatDate(currentDate)}</div>
+
+                    {/* ACHIEVEMENT BANNER (Shows if 1 Hour OT passed) */}
+                    {showAchievement && (
+                        <div className="achievement-banner">
+                            <div className="achievement-title">{t.achieveTitle}</div>
+                            <div className="achievement-msg">{t.achieveMsg}</div>
+                        </div>
+                    )}
 
                     <div className="input-group">
                         <label>{t.timeIn}</label>

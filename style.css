@@ -1,5 +1,5 @@
 :root {
-    /* LIGHT THEME (Default) */
+    /* LIGHT THEME */
     --bg-color: #e0f7fa;
     --bg-gradient-start: #e0f7fa;
     --bg-gradient-end: #e8f5e9;
@@ -38,7 +38,7 @@
     --toggle-btn-icon: #546e7a;
 }
 
-/* DARK THEME OVERRIDES */
+/* DARK THEME */
 [data-theme="dark"] {
     --bg-color: #102a43;
     --bg-gradient-start: #102a43;
@@ -86,9 +86,7 @@ body {
     justify-content: center;
     align-items: center;
     background-color: var(--bg-color);
-    background-image: 
-        linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%),
-        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3%3Cg fill='none' fill-rule='evenodd'%3%3Cg fill='%23999' fill-opacity='0.08'%3%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm10-14V10h-2v10h-10v2h10v10h2V22h10v-2H46zM20 10h-2v10h-10v2h10v10h2V22h10v-2H20V10zm0 30H10a2 2 0 1 1 0-4h10V26a2 2 0 1 1 4 0v10h10a2 2 0 1 1 0 4H24v10a2 2 0 1 1-4 0V40z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     transition: background 0.3s ease;
 }
 
@@ -107,20 +105,58 @@ body {
     position: relative;
 }
 
-.theme-toggle {
+/* NEW: CLEAN LANGUAGE SWITCHER */
+.top-controls {
     position: absolute;
     top: 20px;
     right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lang-switcher {
+    display: flex;
+    gap: 4px;
+    background: var(--toggle-btn-bg);
+    padding: 4px;
+    border-radius: 20px;
+}
+
+.lang-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.lang-btn:hover {
+    color: var(--text-main);
+}
+
+.lang-btn.active {
+    background: var(--input-focus);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.theme-toggle {
     background: var(--toggle-btn-bg);
     border: none;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: var(--toggle-btn-icon);
     transition: transform 0.2s ease, background 0.3s ease;
 }
@@ -139,7 +175,7 @@ h1 {
 }
 
 .live-date {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
     font-weight: 500;
     margin-top: -1.2rem;
@@ -157,7 +193,7 @@ label {
     margin-bottom: 0.6rem;
     color: var(--text-secondary);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 input[type="time"] {
@@ -193,7 +229,7 @@ input[type="time"]:focus {
     border-radius: 8px;
     border-left: 4px solid var(--note-border);
     line-height: 1.4;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.3s ease;
 }
 
 .note.error {
@@ -244,7 +280,7 @@ input[type="time"]:focus {
     background-color: var(--input-bg);
     border: 1px solid var(--input-border);
     border-radius: 10px;
-    padding: 10px 5px;
+    padding: 8px 4px;
     text-align: center;
     transition: all 0.3s ease;
     display: flex;
@@ -255,10 +291,10 @@ input[type="time"]:focus {
 
 .prayer-card.active {
     background-color: var(--input-focus);
-    border-color: var(--input-focus);
     color: #fff;
     transform: translateY(-3px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-color: transparent;
 }
 
 .prayer-card.active .prayer-name,
@@ -267,7 +303,7 @@ input[type="time"]:focus {
 }
 
 .prayer-name {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -275,14 +311,9 @@ input[type="time"]:focus {
 }
 
 .prayer-time {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: bold;
     color: var(--text-main);
-}
-
-@media (max-width: 380px) {
-    .prayer-name { font-size: 0.65rem; }
-    .prayer-time { font-size: 0.8rem; }
 }
 
 .result-card {
@@ -329,7 +360,7 @@ table {
 }
 
 th, td {
-    padding: 14px;
+    padding: 12px 14px;
     text-align: left;
 }
 
@@ -337,7 +368,9 @@ th {
     background-color: var(--table-header-bg);
     color: var(--text-main);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 td {
@@ -346,6 +379,7 @@ td {
     background-color: var(--table-row-bg);
     border-bottom: 1px solid var(--table-border);
     transition: background 0.3s ease, color 0.3s ease;
+    font-size: 0.95rem;
 }
 
 tr:nth-child(even) td {

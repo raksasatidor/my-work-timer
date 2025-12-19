@@ -386,6 +386,45 @@ tr:nth-child(even) td {
     background-color: var(--table-row-alt);
 }
 
+/* ACHIEVEMENT BANNER */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.achievement-banner {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    color: #880e4f;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+    animation: slideDown 0.5s ease-out;
+    border: 1px solid #ffcdd2;
+}
+
+[data-theme="dark"] .achievement-banner {
+    background: linear-gradient(135deg, #6a1b9a 0%, #4527a0 100%);
+    color: #e1bee7;
+    border: 1px solid #7b1fa2;
+    box-shadow: 0 4px 15px rgba(123, 31, 162, 0.4);
+}
+
+.achievement-title {
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.achievement-msg {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
 tr:last-child td {
     border-bottom: none;
 }

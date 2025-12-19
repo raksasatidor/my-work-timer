@@ -425,6 +425,46 @@ tr:nth-child(even) td {
     font-weight: 500;
 }
 
+/* --- MOBILE FIXES (Paste at bottom of style.css) --- */
+
+@media (max-width: 480px) {
+    /* 1. Fix the Header Overlap */
+    .top-controls {
+        position: relative; /* Stop floating in the corner */
+        top: auto;
+        right: auto;
+        justify-content: center; /* Center the buttons */
+        margin-bottom: 10px;     /* Push the Title down */
+        width: 100%;
+    }
+
+    /* 2. Adjust Container for Mobile */
+    .container {
+        padding: 1.5rem;      /* Give more breathing room */
+        width: 88%;           /* Prevent touching screen edges */
+        margin-top: 2rem;     /* Space from top notch */
+    }
+
+    /* 3. Resize Title */
+    h1 {
+        font-size: 1.5rem;
+        margin-top: 0;        /* Reset top margin */
+        margin-bottom: 1.2rem;
+    }
+
+    /* 4. Make Time Input Easier to Tap */
+    input[type="time"] {
+        font-size: 1.4rem;
+        padding: 10px;
+        text-align: center;   /* Center the time text */
+    }
+    
+    /* 5. Adjust Result Text */
+    .result-card .time-display {
+        font-size: 2.5rem;    /* Slightly smaller to fit */
+    }
+}
+
 tr:last-child td {
     border-bottom: none;
 }

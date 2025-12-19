@@ -1,0 +1,357 @@
+:root {
+    /* LIGHT THEME (Default) */
+    --bg-color: #e0f7fa;
+    --bg-gradient-start: #e0f7fa;
+    --bg-gradient-end: #e8f5e9;
+    
+    --container-bg: rgba(255, 255, 255, 0.85);
+    --container-border: rgba(255, 255, 255, 0.5);
+    --shadow-color: rgba(165, 214, 167, 0.3);
+    
+    --text-main: #546e7a;
+    --text-secondary: #78909c;
+    --text-value: #333;
+    
+    --input-bg: #f4f8f7;
+    --input-border: #e0f2f1;
+    --input-focus: #80cbc4;
+    
+    --note-bg: #e1f5fe;
+    --note-border: #81d4fa;
+    --note-text: #607d8b;
+    
+    --note-error-bg: #ffebee;
+    --note-error-border: #ef9a9a;
+    --note-error-text: #c62828;
+    
+    --card-gradient-start: #80deea;
+    --card-gradient-end: #80cbc4;
+    --card-text: #ffffff;
+    
+    --table-header-bg: #e0f2f1;
+    --table-row-alt: #f9fbfb;
+    --table-row-bg: #ffffff;
+    --table-border: #e0f2f1;
+    --table-text: #455a64;
+
+    --toggle-btn-bg: #e0f2f1;
+    --toggle-btn-icon: #546e7a;
+}
+
+/* DARK THEME OVERRIDES */
+[data-theme="dark"] {
+    --bg-color: #102a43;
+    --bg-gradient-start: #102a43;
+    --bg-gradient-end: #243b53;
+    
+    --container-bg: rgba(30, 48, 66, 0.85);
+    --container-border: rgba(255, 255, 255, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    
+    --text-main: #d9e2ec;
+    --text-secondary: #9fb3c8;
+    --text-value: #f0f4f8;
+    
+    --input-bg: #243b53;
+    --input-border: #334e68;
+    --input-focus: #486581;
+    
+    --note-bg: #243b53;
+    --note-border: #334e68;
+    --note-text: #bcccdc;
+    
+    --note-error-bg: #610404;
+    --note-error-border: #8a0b0b;
+    --note-error-text: #ffcfcf;
+    
+    --card-gradient-start: #0f4c75;
+    --card-gradient-end: #3282b8;
+    --card-text: #ffffff;
+    
+    --table-header-bg: #243b53;
+    --table-row-alt: #1a2f42;
+    --table-row-bg: #102a43;
+    --table-border: #334e68;
+    --table-text: #d9e2ec;
+
+    --toggle-btn-bg: #243b53;
+    --toggle-btn-icon: #ffd700;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-color);
+    background-image: 
+        linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3%3Cg fill='none' fill-rule='evenodd'%3%3Cg fill='%23999' fill-opacity='0.08'%3%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm10-14V10h-2v10h-10v2h10v10h2V22h10v-2H46zM20 10h-2v10h-10v2h10v10h2V22h10v-2H20V10zm0 30H10a2 2 0 1 1 0-4h10V26a2 2 0 1 1 4 0v10h10a2 2 0 1 1 0 4H24v10a2 2 0 1 1-4 0V40z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    transition: background 0.3s ease;
+}
+
+.container {
+    background: var(--container-bg);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    width: 90%;
+    max-width: 420px;
+    margin: 20px;
+    text-align: center;
+    border: 1px solid var(--container-border);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--toggle-btn-bg);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--toggle-btn-icon);
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+h1 {
+    color: var(--text-main);
+    font-size: 1.7rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.8rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.live-date {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: -1.2rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.6rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+input[type="time"] {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1.3rem;
+    border: 2px solid var(--input-border);
+    background-color: var(--input-bg);
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-family: inherit;
+    color: var(--text-value);
+    color-scheme: light;
+    margin-bottom: 0.6rem;
+    transition: all 0.2s ease;
+}
+
+[data-theme="dark"] input[type="time"] {
+    color-scheme: dark;
+}
+
+input[type="time"]:focus {
+    border-color: var(--input-focus);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(128, 203, 196, 0.2);
+}
+
+.note {
+    font-size: 0.85rem;
+    color: var(--note-text);
+    background-color: var(--note-bg);
+    padding: 10px 12px;
+    border-radius: 8px;
+    border-left: 4px solid var(--note-border);
+    line-height: 1.4;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.note.error {
+    color: var(--note-error-text);
+    background-color: var(--note-error-bg);
+    border-left-color: var(--note-error-border);
+}
+
+.weather-widget {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.weather-icon {
+    font-size: 2.5rem;
+}
+
+.weather-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.weather-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+
+.prayer-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.prayer-card {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    padding: 10px 5px;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.prayer-card.active {
+    background-color: var(--input-focus);
+    border-color: var(--input-focus);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.prayer-card.active .prayer-name,
+.prayer-card.active .prayer-time {
+    color: #fff;
+}
+
+.prayer-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.prayer-time {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+@media (max-width: 380px) {
+    .prayer-name { font-size: 0.65rem; }
+    .prayer-time { font-size: 0.8rem; }
+}
+
+.result-card {
+    background-image: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
+    padding: 1.8rem;
+    border-radius: 15px;
+    margin-bottom: 2.2rem;
+    margin-top: 1.8rem;
+    color: var(--card-text);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.result-card h2 {
+    margin: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.9;
+    color: white;
+}
+
+.result-card .time-display {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-top: 0.4rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result-card small {
+    display: block;
+    margin-top: 5px;
+    opacity: 0.8;
+    font-size: 0.8rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--table-border);
+}
+
+th, td {
+    padding: 14px;
+    text-align: left;
+}
+
+th {
+    background-color: var(--table-header-bg);
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+td {
+    color: var(--table-text);
+    font-weight: 500;
+    background-color: var(--table-row-bg);
+    border-bottom: 1px solid var(--table-border);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+tr:nth-child(even) td {
+    background-color: var(--table-row-alt);
+}
+
+tr:last-child td {
+    border-bottom: none;
+}

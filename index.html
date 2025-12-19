@@ -24,8 +24,8 @@
                 standardOut: "Standard Time Out",
                 shiftHours: "(9.5 Hours Shift)",
                 headerOT: "Overtime",
-                headerClockOut: "Clock Out At",
-                headerRate: "SWAT Rate (RM)",
+                headerClockOut: "Clock Out",
+                headerRate: "Rate (RM)",
                 noteError: "For DS4 the minimum time in is 07:30 and maximum time in is 09:30.",
                 weatherCheck: "Checking Sony...",
                 weatherStorm: "Stormy at Sony",
@@ -37,7 +37,7 @@
                 prayers: {
                     fajr: "Fajr", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha"
                 },
-                labels: ["1 Hour OT", "2 Hours OT", "3 Hours OT", "4 Hours OT"]
+                labels: ["1 Hour", "2 Hours", "3 Hours", "4 Hours"]
             },
             cn: {
                 title: "下班时间计算器",
@@ -46,7 +46,7 @@
                 shiftHours: "(9.5 小时轮班)",
                 headerOT: "加班时长",
                 headerClockOut: "打卡时间",
-                headerRate: "SWAT 津贴 (RM)",
+                headerRate: "津贴 (RM)",
                 noteError: "DS4 最早上班时间为 07:30，最晚为 09:30。",
                 weatherCheck: "正在检查 Sony 天气...",
                 weatherStorm: "Sony 正在暴风雨",
@@ -58,16 +58,16 @@
                 prayers: {
                     fajr: "晨礼", dhuhr: "晌礼", asr: "晡礼", maghrib: "昏礼", isha: "宵礼"
                 },
-                labels: ["加班 1 小时", "加班 2 小时", "加班 3 小时", "加班 4 小时"]
+                labels: ["1 小时", "2 小时", "3 小时", "4 小时"]
             },
             jp: {
                 title: "退勤時間計算機",
                 timeIn: "出勤時間",
                 standardOut: "定時退社時間",
                 shiftHours: "(9.5時間シフト)",
-                headerOT: "残業時間",
+                headerOT: "残業",
                 headerClockOut: "退勤時刻",
-                headerRate: "SWAT 手当 (RM)",
+                headerRate: "手当 (RM)",
                 noteError: "DS4の出勤時間は07:30から09:30の間です。",
                 weatherCheck: "Sonyの天気を確認中...",
                 weatherStorm: "Sonyは嵐です",
@@ -79,7 +79,7 @@
                 prayers: {
                     fajr: "ファジュル", dhuhr: "ズフル", asr: "アスル", maghrib: "マグリブ", isha: "イシャ"
                 },
-                labels: ["残業 1時間", "残業 2時間", "残業 3時間", "残業 4時間"]
+                labels: ["1時間", "2時間", "3時間", "4時間"]
             }
         };
 
@@ -90,17 +90,17 @@
             const [otTable, setOtTable] = useState([]);
             const [isOutOfRange, setIsOutOfRange] = useState(false);
             const [theme, setTheme] = useState('light');
-            const [lang, setLang] = useState('en'); // Default Language
+            const [lang, setLang] = useState('en'); 
             
             const [currentDate, setCurrentDate] = useState(new Date());
             const [weatherData, setWeatherData] = useState(null);
             const [prayerTimes, setPrayerTimes] = useState([]);
             const [nextPrayer, setNextPrayer] = useState(null);
 
-            const t = translations[lang]; // Helper for current translation
+            const t = translations[lang];
 
-            // --- SWAT RATE CONSTANT ---
-            const SWAT_RATE_PER_HOUR = 22.355555;
+            // --- SWAT RATE CONSTANT (UPDATED) ---
+            const SWAT_RATE_PER_HOUR = 22.35;
 
             // --- SETUP & INIT ---
             useEffect(() => {
@@ -116,17 +116,14 @@
                 return () => clearInterval(timer);
             }, []);
 
-            // Re-fetch prayers when language changes to translate names if needed (or just re-render)
-            // Actually, we store raw times and translate names on render.
-
             const toggleTheme = () => {
                 const newTheme = theme === 'light' ? 'dark' : 'light';
                 setTheme(newTheme);
                 document.documentElement.setAttribute('data-theme', newTheme);
             };
 
-            const toggleLang = (e) => {
-                setLang(e.target.value);
+            const setLanguage = (newLang) => {
+                setLang(newLang);
             };
 
             // --- DATE FORMATTER ---
@@ -183,7 +180,6 @@
                             return `${hours}:${minutes} ${ampm}`;
                         };
                         
-                        // Store keys instead of hardcoded names so we can translate them
                         const list = [
                             { key: 'fajr', time: formatTime(todayPrayers.fajr), raw: todayPrayers.fajr },
                             { key: 'dhuhr', time: formatTime(todayPrayers.dhuhr), raw: todayPrayers.dhuhr },
@@ -218,7 +214,6 @@
                 return `${newH}:${newM}`;
             };
 
-            // Re-run calculations when timeIn OR lang changes
             useEffect(() => {
                 if (timeIn) {
                     if (timeIn < "07:30" || timeIn > "09:30") setIsOutOfRange(true);
@@ -232,7 +227,7 @@
                     const ot3 = addTime(ot2, 1, 0);
                     const ot4 = addTime(ot3, 1, 0);
 
-                    // Calculate Rates
+                    // Calculate Rates (Exact updated calculation)
                     const rate1 = (SWAT_RATE_PER_HOUR * 1).toFixed(2);
                     const rate2 = (SWAT_RATE_PER_HOUR * 2).toFixed(2);
                     const rate3 = (SWAT_RATE_PER_HOUR * 3).toFixed(2);
@@ -245,32 +240,20 @@
                         { label: t.labels[3], time: ot4, rate: rate4 },
                     ]);
                 }
-            }, [timeIn, lang]); // Added lang dependency to refresh labels
+            }, [timeIn, lang]);
 
             const weatherInfo = getWeatherMessage(weatherData?.weathercode);
 
             return (
                 <div className="container">
-                    {/* CONTROLS (Theme + Lang) */}
-                    <div style={{position: 'absolute', top: '20px', right: '20px', display: 'flex', gap: '10px'}}>
-                        <select 
-                            value={lang} 
-                            onChange={toggleLang}
-                            style={{
-                                padding: '5px',
-                                borderRadius: '15px',
-                                border: 'none',
-                                background: theme === 'light' ? '#e0f2f1' : '#243b53',
-                                color: theme === 'light' ? '#546e7a' : '#d9e2ec',
-                                cursor: 'pointer',
-                                outline: 'none'
-                            }}
-                        >
-                            <option value="en">English</option>
-                            <option value="cn">中文</option>
-                            <option value="jp">日本語</option>
-                        </select>
-                        <button className="theme-toggle" onClick={toggleTheme} style={{position: 'static'}}>
+                    {/* CONTROLS: Language & Theme */}
+                    <div className="top-controls">
+                        <div className="lang-switcher">
+                            <button className={`lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLanguage('en')}>EN</button>
+                            <button className={`lang-btn ${lang === 'cn' ? 'active' : ''}`} onClick={() => setLanguage('cn')}>CN</button>
+                            <button className={`lang-btn ${lang === 'jp' ? 'active' : ''}`} onClick={() => setLanguage('jp')}>JP</button>
+                        </div>
+                        <button className="theme-toggle" onClick={toggleTheme}>
                             {theme === 'light' ? '🌙' : '☀️'}
                         </button>
                     </div>

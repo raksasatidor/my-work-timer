@@ -519,3 +519,20 @@ tr:last-child td {
         margin-top: 0;
     }
 }
+
+/* ... existing code ... */
+
+@media (max-width: 480px) {
+    /* ... existing mobile styles ... */
+    
+    /* ADD THIS TO FIX CENTERING */
+    .input-group {
+        text-align: center !important; /* Forces label to center */
+    }
+
+    input[type="time"] {
+        text-align: center; /* Ensures the time text is centered */
+        margin: 0 auto;     /* Centers the box itself if it has a width */
+        display: block;
+    }
+}

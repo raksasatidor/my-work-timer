@@ -1,30 +1,10 @@
-/* 1. Add this at the VERY TOP of style.css */
+/* 1. Global Reset */
 * {
-    box-sizing: border-box; /* This fixes the width calculation issue */
-}
-
-/* 2. Update the BODY style to this (Replace existing body style) */
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    /* On mobile, 'align-items: center' can cut off the top if the screen is small. 
-       We use 'align-items: flex-start' with some top padding instead. */
-    align-items: flex-start; 
-    padding-top: 40px; /* Push it down slightly */
-    padding-bottom: 40px;
-    background-color: var(--bg-color);
-    background-image: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-    transition: background 0.3s ease;
-    overflow-x: hidden; /* Stop side-scrolling */
+    box-sizing: border-box;
 }
 
 :root {
-    /* LIGHTTHEME */
+    /* LIGHT THEME */
     --bg-color: #e0f7fa;
     --bg-gradient-start: #e0f7fa;
     --bg-gradient-end: #e8f5e9;
@@ -106,13 +86,18 @@ body {
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
+    padding: 0;
     min-height: 100vh;
+    width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Fix for mobile scrolling */
+    padding-top: 40px;
+    padding-bottom: 40px;
     background-color: var(--bg-color);
     background-image: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     transition: background 0.3s ease;
+    overflow-x: hidden;
 }
 
 .container {
@@ -130,7 +115,7 @@ body {
     position: relative;
 }
 
-/* NEW: CLEAN LANGUAGE SWITCHER */
+/* TOP CONTROLS (Language + Theme) */
 .top-controls {
     position: absolute;
     top: 20px;
@@ -190,6 +175,7 @@ body {
     transform: scale(1.1);
 }
 
+/* TYPOGRAPHY */
 h1 {
     color: var(--text-main);
     font-size: 1.7rem;
@@ -208,6 +194,7 @@ h1 {
     letter-spacing: 0.5px;
 }
 
+/* INPUT SECTION */
 .input-group {
     margin-bottom: 1.5rem;
     text-align: left;
@@ -263,6 +250,46 @@ input[type="time"]:focus {
     border-left-color: var(--note-error-border);
 }
 
+/* ACHIEVEMENT BANNER */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.achievement-banner {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    color: #880e4f;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+    animation: slideDown 0.5s ease-out;
+    border: 1px solid #ffcdd2;
+}
+
+[data-theme="dark"] .achievement-banner {
+    background: linear-gradient(135deg, #6a1b9a 0%, #4527a0 100%);
+    color: #e1bee7;
+    border: 1px solid #7b1fa2;
+    box-shadow: 0 4px 15px rgba(123, 31, 162, 0.4);
+}
+
+.achievement-title {
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.achievement-msg {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+/* WEATHER & PRAYERS */
 .weather-widget {
     margin-top: 1.5rem;
     padding: 1rem;
@@ -341,6 +368,7 @@ input[type="time"]:focus {
     color: var(--text-main);
 }
 
+/* RESULTS & TABLE */
 .result-card {
     background-image: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
     padding: 1.8rem;
@@ -411,99 +439,19 @@ tr:nth-child(even) td {
     background-color: var(--table-row-alt);
 }
 
-/* ACHIEVEMENT BANNER */
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.achievement-banner {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    color: #880e4f;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
-    animation: slideDown 0.5s ease-out;
-    border: 1px solid #ffcdd2;
-}
-
-[data-theme="dark"] .achievement-banner {
-    background: linear-gradient(135deg, #6a1b9a 0%, #4527a0 100%);
-    color: #e1bee7;
-    border: 1px solid #7b1fa2;
-    box-shadow: 0 4px 15px rgba(123, 31, 162, 0.4);
-}
-
-.achievement-title {
-    font-weight: 800;
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.achievement-msg {
-    font-size: 0.9rem;
-    line-height: 1.4;
-    font-weight: 500;
-}
-
-/* --- MOBILE FIXES (Paste at bottom of style.css) --- */
-
-@media (max-width: 480px) {
-    /* 1. Fix the Header Overlap */
-    .top-controls {
-        position: relative; /* Stop floating in the corner */
-        top: auto;
-        right: auto;
-        justify-content: center; /* Center the buttons */
-        margin-bottom: 10px;     /* Push the Title down */
-        width: 100%;
-    }
-
-    /* 2. Adjust Container for Mobile */
-    .container {
-        padding: 1.5rem;      /* Give more breathing room */
-        width: 88%;           /* Prevent touching screen edges */
-        margin-top: 2rem;     /* Space from top notch */
-    }
-
-    /* 3. Resize Title */
-    h1 {
-        font-size: 1.5rem;
-        margin-top: 0;        /* Reset top margin */
-        margin-bottom: 1.2rem;
-    }
-
-    /* 4. Make Time Input Easier to Tap */
-    input[type="time"] {
-        font-size: 1.4rem;
-        padding: 10px;
-        text-align: center;   /* Center the time text */
-    }
-    
-    /* 5. Adjust Result Text */
-    .result-card .time-display {
-        font-size: 2.5rem;    /* Slightly smaller to fit */
-    }
-}
-
 tr:last-child td {
     border-bottom: none;
 }
 
-/* --- MOBILE FIXES --- */
+/* --- MOBILE & RESPONSIVE FIXES --- */
 @media (max-width: 480px) {
     .container {
-        /* Ensure it doesn't touch edges */
         width: 90%; 
         max-width: 400px;
-        /* Force centering */
         margin-left: auto;
         margin-right: auto;
-        margin-top: 10px; 
+        margin-top: 10px;
+        padding: 1.5rem;
     }
 
     .top-controls {
@@ -517,22 +465,38 @@ tr:last-child td {
 
     h1 {
         margin-top: 0;
+        font-size: 1.6rem;
     }
-}
 
-/* ... existing code ... */
-
-@media (max-width: 480px) {
-    /* ... existing mobile styles ... */
-    
-    /* ADD THIS TO FIX CENTERING */
+    /* FIX: Center the "Time In" Label and Box */
     .input-group {
-        text-align: center !important; /* Forces label to center */
+        text-align: center !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
     }
 
+    label {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* FIX: Make the Input Box a Centered "Pill" */
     input[type="time"] {
-        text-align: center; /* Ensures the time text is centered */
-        margin: 0 auto;     /* Centers the box itself if it has a width */
         display: block;
+        width: 180px !important; 
+        margin: 5px auto !important;
+        text-align: center;
+        padding: 8px 0;
+        border-radius: 25px; 
+        font-size: 1.3rem;
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: var(--input-bg);
+    }
+
+    .result-card .time-display {
+        font-size: 2.5rem;
     }
 }

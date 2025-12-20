@@ -31,9 +31,11 @@
                 weatherStorm: "Stormy at Sony",
                 weatherRain: "Raining at Sony",
                 weatherClear: "Sunny at Sony",
+                weatherNight: "Clear Night at Sony",
                 msgStorm: "Dangerously stormy! Stay inside, you're electric enough without the lightning. ⚡",
                 msgRain: "Don't forget your umbrella! It's crying outside, but your outfit is still fire. 🔥",
                 msgClear: "No umbrella needed! The weather is bright, just like your beautiful face today. ✨",
+                msgNight: "The stars are out! Drive safe and have a restful evening. 🌙",
                 prayers: {
                     fajr: "Fajr", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha"
                 },
@@ -54,9 +56,11 @@
                 weatherStorm: "Sony 正在暴风雨",
                 weatherRain: "Sony 正在下雨",
                 weatherClear: "Sony 阳光明媚",
+                weatherNight: "Sony 夜空晴朗",
                 msgStorm: "外面风暴很危险！呆在室内吧，不用闪电你也够迷人了。⚡",
                 msgRain: "别忘了带伞！天在哭，但你的穿搭依然火辣。🔥",
                 msgClear: "不需要伞！天气晴朗，就像你今天美丽的脸庞一样。✨",
+                msgNight: "星星出来了！回家路上小心驾驶，晚安。🌙",
                 prayers: {
                     fajr: "晨礼", dhuhr: "晌礼", asr: "晡礼", maghrib: "昏礼", isha: "宵礼"
                 },
@@ -77,9 +81,11 @@
                 weatherStorm: "Sonyは嵐です",
                 weatherRain: "Sonyは雨です",
                 weatherClear: "Sonyは晴れです",
+                weatherNight: "Sonyは晴れた夜です",
                 msgStorm: "危険な嵐です！室内にいてください。雷がなくてもあなたは十分刺激的ですから。⚡",
                 msgRain: "傘を忘れないで！空は泣いていますが、あなたの服は決まっています。🔥",
                 msgClear: "傘はいりません！天気は晴れています、今日のあなたの美しい顔のように。✨",
+                msgNight: "星が出ています！気をつけて帰ってくださいね。おやすみなさい。🌙",
                 prayers: {
                     fajr: "ファジュル", dhuhr: "ズフル", asr: "アスル", maghrib: "マグリブ", isha: "イシャ"
                 },
@@ -103,12 +109,10 @@
             const [prayerTimes, setPrayerTimes] = useState([]);
             const [nextPrayer, setNextPrayer] = useState(null);
             
-            // Achievement State
             const [showAchievement, setShowAchievement] = useState(false);
 
             const t = translations[lang];
 
-            // --- SWAT RATE CONSTANT ---
             const SWAT_RATE_PER_HOUR = 22.35;
 
             // --- SETUP & INIT ---
@@ -131,9 +135,7 @@
                 document.documentElement.setAttribute('data-theme', newTheme);
             };
 
-            const setLanguage = (newLang) => {
-                setLang(newLang);
-            };
+            const setLanguage = (newLang) => setLang(newLang);
 
             // --- DATE FORMATTER ---
             const formatDate = (date) => {
@@ -152,7 +154,7 @@
                 });
             };
 
-            // --- WEATHER ---
+            // --- WEATHER (UPDATED LOGIC) ---
             const fetchWeather = async () => {
                 try {
                     const response = await fetch("https://api.open-meteo.com/v1/forecast?latitude=2.937019&longitude=101.760007&current_weather=true");
@@ -161,11 +163,23 @@
                 } catch (error) { console.error("Weather fail", error); }
             };
 
-            const getWeatherMessage = (code) => {
-                if (code === undefined) return { icon: "❓", title: t.weatherCheck, msg: "..." };
+            const getWeatherMessage = (data) => {
+                if (!data) return { icon: "❓", title: t.weatherCheck, msg: "..." };
+                
+                const code = data.weathercode;
+                const isDay = data.is_day; // 1 = Day, 0 = Night
+
+                // Storm
                 if (code >= 95) return { icon: "⛈️", title: t.weatherStorm, msg: t.msgStorm };
-                else if (code >= 51) return { icon: "☔", title: t.weatherRain, msg: t.msgRain };
-                else return { icon: "☀️", title: t.weatherClear, msg: t.msgClear };
+                // Rain
+                if (code >= 51) return { icon: "☔", title: t.weatherRain, msg: t.msgRain };
+                
+                // Clear/Cloudy: Check Day vs Night
+                if (isDay === 0) {
+                    return { icon: "🌙", title: t.weatherNight, msg: t.msgNight };
+                } else {
+                    return { icon: "☀️", title: t.weatherClear, msg: t.msgClear };
+                }
             };
 
             // --- PRAYERS ---
@@ -188,7 +202,6 @@
                             minutes = minutes < 10 ? '0' + minutes : minutes;
                             return `${hours}:${minutes} ${ampm}`;
                         };
-                        
                         const list = [
                             { key: 'fajr', time: formatTime(todayPrayers.fajr), raw: todayPrayers.fajr },
                             { key: 'dhuhr', time: formatTime(todayPrayers.dhuhr), raw: todayPrayers.dhuhr },
@@ -223,7 +236,6 @@
                 return `${newH}:${newM}`;
             };
 
-            // Convert "HH:MM" string to a Date object for comparison (using today's date)
             const getTimeObject = (timeStr) => {
                 if (!timeStr) return null;
                 const [h, m] = timeStr.split(':').map(Number);
@@ -245,16 +257,11 @@
                     const ot3 = addTime(ot2, 1, 0);
                     const ot4 = addTime(ot3, 1, 0);
 
-                    // Check Achievement (Compare NOW vs OT 1 Time)
+                    // Achievement Logic
                     const now = new Date();
                     const ot1Date = getTimeObject(ot1);
-                    
-                    // Simple logic: If current time is AFTER OT1 time
-                    if (ot1Date && now >= ot1Date) {
-                        setShowAchievement(true);
-                    } else {
-                        setShowAchievement(false);
-                    }
+                    if (ot1Date && now >= ot1Date) setShowAchievement(true);
+                    else setShowAchievement(false);
 
                     const rate1 = (SWAT_RATE_PER_HOUR * 1).toFixed(2);
                     const rate2 = (SWAT_RATE_PER_HOUR * 2).toFixed(2);
@@ -268,13 +275,12 @@
                         { label: t.labels[3], time: ot4, rate: rate4 },
                     ]);
                 }
-            }, [timeIn, lang, currentDate]); // Added currentDate dependency so it checks every second
+            }, [timeIn, lang, currentDate]);
 
-            const weatherInfo = getWeatherMessage(weatherData?.weathercode);
+            const weatherInfo = getWeatherMessage(weatherData);
 
             return (
                 <div className="container">
-                    {/* CONTROLS */}
                     <div className="top-controls">
                         <div className="lang-switcher">
                             <button className={`lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLanguage('en')}>EN</button>
@@ -290,7 +296,6 @@
                     
                     <div className="live-date">{formatDate(currentDate)}</div>
 
-                    {/* ACHIEVEMENT BANNER (Shows if 1 Hour OT passed) */}
                     {showAchievement && (
                         <div className="achievement-banner">
                             <div className="achievement-title">{t.achieveTitle}</div>

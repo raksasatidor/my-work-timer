@@ -22,7 +22,9 @@
                 title: "Go Home Calculator",
                 timeIn: "Time In",
                 standardOut: "Standard Time Out",
+                halfDayOut: "Half Day / Leave Out",
                 shiftHours: "(9.5 Hours Shift)",
+                halfShiftHours: "(4h 45m Shift)",
                 headerOT: "Overtime",
                 headerClockOut: "Clock Out",
                 headerRate: "Rate (RM)",
@@ -42,7 +44,6 @@
                 labels: ["1 Hour", "2 Hours", "3 Hours", "4 Hours"],
                 achieveTitle: "RM 22.35 SECURED! 💰",
                 achieveMsg: "You've survived 1 Hour of OT! Keep grinding for the next level, or run home to your loving family? The choice is yours. ❤️",
-                // COUNTDOWN MESSAGES
                 timeLeft: "{h}h {m}m to freedom! 🚀",
                 timeDone: "Shift Done! Go Home! 🎉"
             },
@@ -50,7 +51,9 @@
                 title: "下班时间计算器",
                 timeIn: "上班时间",
                 standardOut: "标准下班时间",
+                halfDayOut: "半天 / 请假下班时间",
                 shiftHours: "(9.5 小时轮班)",
+                halfShiftHours: "(4小时 45分 轮班)",
                 headerOT: "加班时长",
                 headerClockOut: "打卡时间",
                 headerRate: "津贴 (RM)",
@@ -77,7 +80,9 @@
                 title: "退勤時間計算機",
                 timeIn: "出勤時間",
                 standardOut: "定時退社時間",
+                halfDayOut: "半休 / 早退時間",
                 shiftHours: "(9.5時間シフト)",
+                halfShiftHours: "(4時間45分 シフト)",
                 headerOT: "残業",
                 headerClockOut: "退勤時刻",
                 headerRate: "手当 (RM)",
@@ -106,6 +111,7 @@
             // --- STATE MANAGEMENT ---
             const [timeIn, setTimeIn] = useState("08:30");
             const [timeOut, setTimeOut] = useState("");
+            const [halfDayOut, setHalfDayOut] = useState(""); // NEW State for Half Day
             const [otTable, setOtTable] = useState([]);
             const [isOutOfRange, setIsOutOfRange] = useState(false);
             const [theme, setTheme] = useState('light');
@@ -118,8 +124,9 @@
             
             const [showAchievement, setShowAchievement] = useState(false);
             
-            // NEW: Countdown State
+            // Countdown States
             const [countdownMsg, setCountdownMsg] = useState("");
+            const [halfDayCountdownMsg, setHalfDayCountdownMsg] = useState(""); // NEW
 
             const t = translations[lang];
 
@@ -135,7 +142,6 @@
                 fetchWeather();
                 fetchPrayerTimes();
 
-                // Timer runs every second to update Date AND Countdown
                 const timer = setInterval(() => {
                     const now = new Date();
                     setCurrentDate(now);
@@ -256,40 +262,52 @@
                 return d;
             };
 
-            // Calculate Countdown Logic
+            // Calculate Countdowns Logic
             useEffect(() => {
-                if (!timeOut) {
-                    setCountdownMsg("");
-                    return;
-                }
+                const now = currentDate;
 
-                const targetDate = getTimeObject(timeOut);
-                if (!targetDate) return;
+                // Helper to update text
+                const updateTimer = (targetTimeStr, setMsgFunc) => {
+                    if (!targetTimeStr) {
+                        setMsgFunc("");
+                        return;
+                    }
+                    const targetDate = getTimeObject(targetTimeStr);
+                    if (!targetDate) return;
 
-                // Calculate diff
-                const now = currentDate; // Updates every second from other useEffect
-                const diff = targetDate - now;
+                    const diff = targetDate - now;
+                    if (diff <= 0) {
+                        setMsgFunc(t.timeDone);
+                    } else {
+                        const diffHrs = Math.floor(diff / 3600000);
+                        const diffMins = Math.floor((diff % 3600000) / 60000);
+                        const msg = t.timeLeft
+                            .replace('{h}', diffHrs)
+                            .replace('{m}', diffMins);
+                        setMsgFunc(msg);
+                    }
+                };
 
-                if (diff <= 0) {
-                    setCountdownMsg(t.timeDone);
-                } else {
-                    const diffHrs = Math.floor(diff / 3600000);
-                    const diffMins = Math.floor((diff % 3600000) / 60000);
-                    const msg = t.timeLeft
-                        .replace('{h}', diffHrs)
-                        .replace('{m}', diffMins);
-                    setCountdownMsg(msg);
-                }
+                // Update Standard Timer
+                updateTimer(timeOut, setCountdownMsg);
+                
+                // Update Half Day Timer
+                updateTimer(halfDayOut, setHalfDayCountdownMsg);
 
-            }, [currentDate, timeOut, lang]); // Recalculate whenever time/lang changes
+            }, [currentDate, timeOut, halfDayOut, lang]);
 
             useEffect(() => {
                 if (timeIn) {
                     if (timeIn < "07:30" || timeIn > "09:30") setIsOutOfRange(true);
                     else setIsOutOfRange(false);
 
+                    // Standard Shift (9h 30m)
                     const standardExit = addTime(timeIn, 9, 30);
                     setTimeOut(standardExit);
+
+                    // Half Day Shift (4h 45m)
+                    const halfExit = addTime(timeIn, 4, 45);
+                    setHalfDayOut(halfExit);
 
                     const ot1 = addTime(standardExit, 1, 10);
                     const ot2 = addTime(ot1, 1, 0);
@@ -354,15 +372,20 @@
                         </div>
                     </div>
 
-                    {/* UPDATED RESULT CARD WITH COUNTDOWN */}
+                    {/* STANDARD TIME OUT CARD */}
                     <div className="result-card">
                         <h2>{t.standardOut}</h2>
                         <div className="time-display">{timeOut}</div>
-                        
-                        {/* THE NEW COUNTDOWN */}
                         <div className="countdown">{countdownMsg}</div>
-                        
                         <small style={{marginTop: '10px'}}>{t.shiftHours}</small>
+                    </div>
+
+                    {/* NEW: HALF DAY CARD */}
+                    <div className="half-day-card">
+                        <h2>{t.halfDayOut}</h2>
+                        <div className="time-display">{halfDayOut}</div>
+                        <div className="countdown">{halfDayCountdownMsg}</div>
+                        <small>{t.halfShiftHours}</small>
                     </div>
 
                     <div className="weather-widget">

@@ -12,7 +12,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <!-- test -->
 
     <script type="text/babel">
         const { useState, useEffect } = React;
@@ -43,8 +42,9 @@
                     fajr: "Fajr", dhuhr: "Dhuhr", asr: "Asr", maghrib: "Maghrib", isha: "Isha"
                 },
                 labels: ["1 Hour", "2 Hours", "3 Hours", "4 Hours"],
-                achieveTitle: "RM 22.35 SECURED! 💰",
-                achieveMsg: "You've survived 1 Hour of OT! Keep grinding for the next level, or run home to your loving family? The choice is yours. ❤️",
+                // DYNAMIC ACHIEVEMENT TITLES
+                achieveTitle: "RM {amount} SECURED! 💰", 
+                achieveMsg: "You've survived {hours} Hours of OT! Keep grinding or run home? ❤️",
                 timeLeft: "{h}h {m}m to freedom! 🚀",
                 timeDone: "Shift Done! Go Home! 🎉"
             },
@@ -72,8 +72,8 @@
                     fajr: "晨礼", dhuhr: "晌礼", asr: "晡礼", maghrib: "昏礼", isha: "宵礼"
                 },
                 labels: ["1 小时", "2 小时", "3 小时", "4 小时"],
-                achieveTitle: "RM 22.35 到手！💰",
-                achieveMsg: "加班 1 小时达成！继续奋斗赚下一桶金，还是回家陪亲爱的家人？由你决定。❤️",
+                achieveTitle: "RM {amount} 到手！💰",
+                achieveMsg: "加班 {hours} 小时达成！继续赚还是回家？❤️",
                 timeLeft: "距离下班还有 {h}小时 {m}分! 🚀",
                 timeDone: "下班啦！快回家！🎉"
             },
@@ -101,18 +101,17 @@
                     fajr: "ファジュル", dhuhr: "ズフル", asr: "アスル", maghrib: "マグリブ", isha: "イシャ"
                 },
                 labels: ["1時間", "2時間", "3時間", "4時間"],
-                achieveTitle: "RM 22.35 ゲット！💰",
-                achieveMsg: "残業1時間達成！次のレベルを目指して頑張るか、愛する家族の元へ帰るか？決めるのはあなたです。❤️",
+                achieveTitle: "RM {amount} ゲット！💰",
+                achieveMsg: "残業{hours}時間達成！まだ頑張りますか？❤️",
                 timeLeft: "自由まであと {h}時間 {m}分! 🚀",
                 timeDone: "お疲れ様！帰ろう！🎉"
             }
         };
 
         function App() {
-            // --- STATE MANAGEMENT ---
             const [timeIn, setTimeIn] = useState("08:30");
             const [timeOut, setTimeOut] = useState("");
-            const [halfDayOut, setHalfDayOut] = useState(""); // NEW State for Half Day
+            const [halfDayOut, setHalfDayOut] = useState("");
             const [otTable, setOtTable] = useState([]);
             const [isOutOfRange, setIsOutOfRange] = useState(false);
             const [theme, setTheme] = useState('light');
@@ -123,14 +122,14 @@
             const [prayerTimes, setPrayerTimes] = useState([]);
             const [nextPrayer, setNextPrayer] = useState(null);
             
+            // Achievement States
             const [showAchievement, setShowAchievement] = useState(false);
+            const [achievementData, setAchievementData] = useState({ amount: "0.00", hours: "0" });
             
-            // Countdown States
             const [countdownMsg, setCountdownMsg] = useState("");
-            const [halfDayCountdownMsg, setHalfDayCountdownMsg] = useState(""); // NEW
+            const [halfDayCountdownMsg, setHalfDayCountdownMsg] = useState("");
 
             const t = translations[lang];
-
             const SWAT_RATE_PER_HOUR = 22.35;
 
             // --- SETUP & INIT ---
@@ -187,18 +186,13 @@
 
             const getWeatherMessage = (data) => {
                 if (!data) return { icon: "❓", title: t.weatherCheck, msg: "..." };
-                
                 const code = data.weathercode;
                 const isDay = data.is_day; 
 
                 if (code >= 95) return { icon: "⛈️", title: t.weatherStorm, msg: t.msgStorm };
                 if (code >= 51) return { icon: "☔", title: t.weatherRain, msg: t.msgRain };
-                
-                if (isDay === 0) {
-                    return { icon: "🌙", title: t.weatherNight, msg: t.msgNight };
-                } else {
-                    return { icon: "☀️", title: t.weatherClear, msg: t.msgClear };
-                }
+                if (isDay === 0) return { icon: "🌙", title: t.weatherNight, msg: t.msgNight };
+                return { icon: "☀️", title: t.weatherClear, msg: t.msgClear };
             };
 
             // --- PRAYERS ---
@@ -263,11 +257,10 @@
                 return d;
             };
 
-            // Calculate Countdowns Logic
+            // Countdowns Logic
             useEffect(() => {
                 const now = currentDate;
 
-                // Helper to update text
                 const updateTimer = (targetTimeStr, setMsgFunc) => {
                     if (!targetTimeStr) {
                         setMsgFunc("");
@@ -282,56 +275,76 @@
                     } else {
                         const diffHrs = Math.floor(diff / 3600000);
                         const diffMins = Math.floor((diff % 3600000) / 60000);
-                        const msg = t.timeLeft
-                            .replace('{h}', diffHrs)
-                            .replace('{m}', diffMins);
+                        const msg = t.timeLeft.replace('{h}', diffHrs).replace('{m}', diffMins);
                         setMsgFunc(msg);
                     }
                 };
 
-                // Update Standard Timer
                 updateTimer(timeOut, setCountdownMsg);
-                
-                // Update Half Day Timer
                 updateTimer(halfDayOut, setHalfDayCountdownMsg);
 
             }, [currentDate, timeOut, halfDayOut, lang]);
 
+            // Main Calculation Logic
             useEffect(() => {
                 if (timeIn) {
-                    if (timeIn < "07:30" || timeIn > "09:30") setIsOutOfRange(true);
-                    else setIsOutOfRange(false);
+                    // Check if Time In is valid (07:30 - 09:30)
+                    const isValidShift = (timeIn >= "07:30" && timeIn <= "09:30");
+                    setIsOutOfRange(!isValidShift);
 
-                    // Standard Shift (9h 30m)
                     const standardExit = addTime(timeIn, 9, 30);
                     setTimeOut(standardExit);
 
-                    // Half Day Shift (4h 45m)
                     const halfExit = addTime(timeIn, 4, 45);
                     setHalfDayOut(halfExit);
 
-                    const ot1 = addTime(standardExit, 1, 10);
-                    const ot2 = addTime(ot1, 1, 0);
-                    const ot3 = addTime(ot2, 1, 0);
-                    const ot4 = addTime(ot3, 1, 0);
+                    // --- OT LOGIC (Only runs if Valid Shift) ---
+                    if (isValidShift) {
+                        const ot1 = addTime(standardExit, 1, 10);
+                        const ot2 = addTime(ot1, 1, 0);
+                        const ot3 = addTime(ot2, 1, 0);
+                        const ot4 = addTime(ot3, 1, 0);
 
-                    // Achievement Logic
-                    const now = new Date();
-                    const ot1Date = getTimeObject(ot1);
-                    if (ot1Date && now >= ot1Date) setShowAchievement(true);
-                    else setShowAchievement(false);
+                        const rate1 = (SWAT_RATE_PER_HOUR * 1).toFixed(2);
+                        const rate2 = (SWAT_RATE_PER_HOUR * 2).toFixed(2);
+                        const rate3 = (SWAT_RATE_PER_HOUR * 3).toFixed(2);
+                        const rate4 = (SWAT_RATE_PER_HOUR * 4).toFixed(2);
 
-                    const rate1 = (SWAT_RATE_PER_HOUR * 1).toFixed(2);
-                    const rate2 = (SWAT_RATE_PER_HOUR * 2).toFixed(2);
-                    const rate3 = (SWAT_RATE_PER_HOUR * 3).toFixed(2);
-                    const rate4 = (SWAT_RATE_PER_HOUR * 4).toFixed(2);
+                        setOtTable([
+                            { label: t.labels[0], time: ot1, rate: rate1 },
+                            { label: t.labels[1], time: ot2, rate: rate2 },
+                            { label: t.labels[2], time: ot3, rate: rate3 },
+                            { label: t.labels[3], time: ot4, rate: rate4 },
+                        ]);
 
-                    setOtTable([
-                        { label: t.labels[0], time: ot1, rate: rate1 },
-                        { label: t.labels[1], time: ot2, rate: rate2 },
-                        { label: t.labels[2], time: ot3, rate: rate3 },
-                        { label: t.labels[3], time: ot4, rate: rate4 },
-                    ]);
+                        // --- UPGRADED ACHIEVEMENT LOGIC ---
+                        const now = new Date();
+                        const ot1Date = getTimeObject(ot1);
+                        const ot2Date = getTimeObject(ot2);
+                        const ot3Date = getTimeObject(ot3);
+                        const ot4Date = getTimeObject(ot4);
+                        
+                        // Check backwards (highest achievement first)
+                        if (ot4Date && now >= ot4Date) {
+                            setAchievementData({ amount: rate4, hours: "4" });
+                            setShowAchievement(true);
+                        } else if (ot3Date && now >= ot3Date) {
+                            setAchievementData({ amount: rate3, hours: "3" });
+                            setShowAchievement(true);
+                        } else if (ot2Date && now >= ot2Date) {
+                            setAchievementData({ amount: rate2, hours: "2" });
+                            setShowAchievement(true);
+                        } else if (ot1Date && now >= ot1Date) {
+                            setAchievementData({ amount: rate1, hours: "1" });
+                            setShowAchievement(true);
+                        } else {
+                            setShowAchievement(false);
+                        }
+                    } else {
+                        // If invalid shift, clear OT data
+                        setOtTable([]);
+                        setShowAchievement(false);
+                    }
                 }
             }, [timeIn, lang, currentDate]);
 
@@ -351,13 +364,17 @@
                     </div>
 
                     <h1>{t.title}</h1>
-                    
                     <div className="live-date">{formatDate(currentDate)}</div>
 
+                    {/* ACHIEVEMENT BANNER (Dynamic) */}
                     {showAchievement && (
                         <div className="achievement-banner">
-                            <div className="achievement-title">{t.achieveTitle}</div>
-                            <div className="achievement-msg">{t.achieveMsg}</div>
+                            <div className="achievement-title">
+                                {t.achieveTitle.replace('{amount}', achievementData.amount)}
+                            </div>
+                            <div className="achievement-msg">
+                                {t.achieveMsg.replace('{hours}', achievementData.hours)}
+                            </div>
                         </div>
                     )}
 
@@ -373,7 +390,6 @@
                         </div>
                     </div>
 
-                    {/* STANDARD TIME OUT CARD */}
                     <div className="result-card">
                         <h2>{t.standardOut}</h2>
                         <div className="time-display">{timeOut}</div>
@@ -381,7 +397,6 @@
                         <small style={{marginTop: '10px'}}>{t.shiftHours}</small>
                     </div>
 
-                    {/* NEW: HALF DAY CARD */}
                     <div className="half-day-card">
                         <h2>{t.halfDayOut}</h2>
                         <div className="time-display">{halfDayOut}</div>
@@ -408,26 +423,29 @@
                         </div>
                     )}
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>{t.headerOT}</th>
-                                <th>{t.headerClockOut}</th>
-                                <th>{t.headerRate}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {otTable.map((row, index) => (
-                                <tr key={index}>
-                                    <td>{row.label}</td>
-                                    <td>{row.time}</td>
-                                    <td style={{fontWeight: 'bold', color: theme === 'light' ? '#2e7d32' : '#4caf50'}}>
-                                        {row.rate}
-                                    </td>
+                    {/* HIDE OT TABLE IF NO OT AVAILABLE */}
+                    {otTable.length > 0 && (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>{t.headerOT}</th>
+                                    <th>{t.headerClockOut}</th>
+                                    <th>{t.headerRate}</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {otTable.map((row, index) => (
+                                    <tr key={index}>
+                                        <td>{row.label}</td>
+                                        <td>{row.time}</td>
+                                        <td style={{fontWeight: 'bold', color: theme === 'light' ? '#2e7d32' : '#4caf50'}}>
+                                            {row.rate}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             );
         }

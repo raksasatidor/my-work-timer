@@ -315,6 +315,13 @@
                         </div>
                     </div>
 
+                    {/* MOVED: Result Card is now directly under the Input/Note */}
+                    <div className="result-card">
+                        <h2>{t.standardOut}</h2>
+                        <div className="time-display">{timeOut}</div>
+                        <small>{t.shiftHours}</small>
+                    </div>
+
                     <div className="weather-widget">
                         <div className="weather-icon">{weatherInfo.icon}</div>
                         <div className="weather-info">
@@ -333,12 +340,6 @@
                             ))}
                         </div>
                     )}
-
-                    <div className="result-card">
-                        <h2>{t.standardOut}</h2>
-                        <div className="time-display">{timeOut}</div>
-                        <small>{t.shiftHours}</small>
-                    </div>
 
                     <table>
                         <thead>
